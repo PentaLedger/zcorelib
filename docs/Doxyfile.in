@@ -1,0 +1,86 @@
+# Doxygen configuration for zcorelib, generated from docs/Doxyfile.in.
+#
+# Only settings that differ from Doxygen's defaults are listed. A full dumped
+# Doxyfile is ~2700 lines of noise that makes real changes invisible in diffs
+# and breaks on every Doxygen upgrade.
+
+# --- Project ---------------------------------------------------------------
+PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+PROJECT_BRIEF          = "@PROJECT_DESCRIPTION@"
+OUTPUT_DIRECTORY       = "@ZCORE_DOXYGEN_OUTPUT_DIR@"
+
+# --- Input -----------------------------------------------------------------
+INPUT                  = @ZCORE_DOXYGEN_INPUT@
+FILE_PATTERNS          = *.h *.hpp *.c *.cpp *.dox *.md
+RECURSIVE              = YES
+STRIP_FROM_PATH        = "@ZCORE_DOXYGEN_STRIP_PREFIX@"
+STRIP_FROM_INC_PATH    = "@ZCORE_DOXYGEN_STRIP_PREFIX@/include"
+USE_MDFILE_AS_MAINPAGE = docs/pages/mainpage.md
+
+# PFL keeps unit tests next to the sources, so they must be excluded by
+# pattern rather than by directory.
+EXCLUDE_PATTERNS       = */.git/* */build/* */external/* *.test.cpp
+
+# Examples referenced with @include / @snippet.
+EXAMPLE_PATH           = "@ZCORE_DOXYGEN_EXAMPLE_PATH@"
+EXAMPLE_RECURSIVE      = YES
+
+# --- Extraction ------------------------------------------------------------
+# EXTRACT_ALL stays NO on purpose: undocumented public API should show up as a
+# warning, not be silently published with an empty description.
+EXTRACT_ALL            = NO
+EXTRACT_STATIC         = YES
+EXTRACT_PRIV_VIRTUAL   = YES
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_UNDOC_CLASSES     = NO
+
+# The public API is C and C++ together. OPTIMIZE_OUTPUT_FOR_C must stay NO or
+# the C++ wrappers are rendered as if they had no classes.
+OPTIMIZE_OUTPUT_FOR_C  = NO
+JAVADOC_AUTOBRIEF      = YES
+TAB_SIZE               = 4
+MARKDOWN_SUPPORT       = YES
+
+# Resolve macros that would otherwise confuse the parser.
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = ZCORE_EXPORT= \
+                         ZCORE_NO_EXPORT= \
+                         ZCORE_DEPRECATED= \
+                         __cplusplus
+
+# --- Warnings --------------------------------------------------------------
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
+WARN_NO_PARAMDOC       = YES
+WARN_AS_ERROR          = @ZCORE_DOXYGEN_WARN_AS_ERROR@
+
+# --- Output ----------------------------------------------------------------
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_TREEVIEW      = YES
+FULL_SIDEBAR           = NO
+DISABLE_INDEX          = NO
+HTML_COLORSTYLE        = TOGGLE
+SORT_MEMBER_DOCS       = NO
+ALPHABETICAL_INDEX     = YES
+
+# Cross-referenced source listings; cheap and genuinely useful for a library
+# this small.
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+VERBATIM_HEADERS       = YES
+
+# Diagrams require Graphviz; harmless when absent.
+HAVE_DOT               = @DOXYGEN_DOT_FOUND@
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO

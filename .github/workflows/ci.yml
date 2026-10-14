@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The public headers must compile as C11 and C++17 on every target compiler.
+  # A library that only builds under Apple clang is not reusable.
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: "macOS / AppleClang", os: macos-latest, shared: "OFF" }
+          - { name: "Linux / GCC", os: ubuntu-latest, shared: "OFF", cc: gcc, cxx: g++ }
+          - { name: "Linux / Clang", os: ubuntu-latest, shared: "OFF", cc: clang, cxx: clang++ }
+          - { name: "Linux / GCC shared", os: ubuntu-latest, shared: "ON", cc: gcc, cxx: g++ }
+          - { name: "Windows / MSVC", os: windows-latest, shared: "OFF" }
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+          -DZCORE_WARNINGS_AS_ERRORS=ON
+          -DZCORE_BUILD_DOCS=OFF
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  # Sanitizers catch the class of bug that matters most in a C library doing
+  # its own memory management.
+  sanitizers:
+    name: ASan + UBSan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          -DZCORE_ENABLE_SANITIZERS=ON
+          -DZCORE_WARNINGS_AS_ERRORS=ON
+          -DZCORE_BUILD_DOCS=OFF
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+        env:
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+          ASAN_OPTIONS: detect_leaks=1:strict_string_checks=1
+
+  # The round trip an in-tree build never exercises: install, then consume the
+  # installed package from a separate project via find_package(zcore).
+  install-package:
+    name: find_package round trip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - name: Verify installed package
+        run: ./tools/verify-install.sh
+
+  # Doxygen warnings fail the build, so undocumented public API cannot land.
+  docs:
+    name: Doxygen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Doxygen and Graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G Ninja
+          -DZCORE_BUILD_TESTS=OFF
+          -DZCORE_BUILD_EXAMPLES=OFF
+          -DZCORE_BUILD_DOCS=ON
+          -DZCORE_DOCS_WARNINGS_AS_ERRORS=ON
+
+      - name: Build documentation
+        run: cmake --build build --target docs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: api-docs
+          path: build/docs/html
+
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        run: ./tools/format.sh --check

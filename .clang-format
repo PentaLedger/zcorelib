@@ -1,0 +1,57 @@
+---
+# zcorelib formatting. Applies to both the C and C++ halves of the library.
+Language: Cpp
+BasedOnStyle: LLVM
+
+ColumnLimit: 100
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Functions get their brace on the next line (K&R-ish for C), everything else
+# stays attached. Keeps the C sources looking like C.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterNamespace: false
+  BeforeCatch: false
+  BeforeElse: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: true
+BinPackParameters: true
+FixNamespaceComments: true
+IndentCaseLabels: false
+IndentPPDirectives: None
+PointerAlignment: Right
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+
+# Include ordering: the file's own header, then C stdlib, then C++ stdlib,
+# then our public headers, then private headers from src/.
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: '^<[a-z_]+\.h>$'
+    Priority: 2
+  - Regex: '^<[a-z_]+>$'
+    Priority: 3
+  - Regex: '^<zcore/'
+    Priority: 4
+  - Regex: '^<gtest/|^<gmock/'
+    Priority: 5
+  - Regex: '^"zcore/'
+    Priority: 6
+  - Regex: '.*'
+    Priority: 7
