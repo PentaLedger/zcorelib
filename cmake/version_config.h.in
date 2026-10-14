@@ -1,0 +1,29 @@
+/*
+ * zcorelib - foundational C library with C++ wrappers
+ * Copyright (C) 2026 Joe Turner
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+/**
+ * @file version_config.h
+ * @brief Generated version macros. Do not edit; edit the project() version
+ *        in the top-level CMakeLists.txt instead.
+ */
+
+#ifndef ZCORE_VERSION_CONFIG_H
+#define ZCORE_VERSION_CONFIG_H
+
+/** @brief Major version of the headers being compiled against. */
+#define ZCORE_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+/** @brief Minor version of the headers being compiled against. */
+#define ZCORE_VERSION_MINOR @PROJECT_VERSION_MINOR@
+/** @brief Patch version of the headers being compiled against. */
+#define ZCORE_VERSION_PATCH @PROJECT_VERSION_PATCH@
+/** @brief Header version as the string @c "MAJOR.MINOR.PATCH". */
+#define ZCORE_VERSION_STRING "@PROJECT_VERSION@"
+
+#endif /* ZCORE_VERSION_CONFIG_H */

@@ -1,3 +1,12 @@
+# --- Build directories ----------------------------------------------------
+# PFL puts all build output under build/. Everything generated lives there.
+build/
+cmake-build-*/
+out/
+install/
+stage/
+
+# --- CMake ----------------------------------------------------------------
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -6,14 +15,26 @@ Testing
 Makefile
 cmake_install.cmake
 install_manifest.txt
-compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 
-# CLion
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#cmake-build-*
+# compile_commands.json is generated into the build dir; ignore any copy or
+# symlink placed at the repo root for clangd.
+compile_commands.json
+.cache/
+
+# --- Editors / IDEs -------------------------------------------------------
+# JetBrains: https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+.idea/
+.vscode/
+*.swp
+*~
+
+# --- macOS ----------------------------------------------------------------
+.DS_Store
+
+# --- Documentation output -------------------------------------------------
+docs/html/
+docs/latex/
+docs/xml/

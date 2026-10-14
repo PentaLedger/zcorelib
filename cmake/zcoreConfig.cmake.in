@@ -1,0 +1,20 @@
+#
+# zcoreConfig.cmake - package config consumed by find_package(zcore).
+#
+# Usage in a downstream project:
+#
+#   find_package(zcore 0.1 REQUIRED)
+#   target_link_libraries(myapp PRIVATE zcore::zcore)
+#
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/zcoreTargets.cmake")
+
+# zcore exposes both C and C++ headers; a consumer that only uses the C API
+# still needs the C++ runtime if it links the shared library built with CXX
+# sources. That is handled by the imported target's INTERFACE_LINK_LIBRARIES,
+# so no find_dependency() calls are needed today. Add them here if zcorelib
+# ever grows an external dependency.
+
+check_required_components(zcore)
